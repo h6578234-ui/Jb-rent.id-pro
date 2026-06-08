@@ -11,6 +11,17 @@
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans">
 
+    <div id="modalAdmin" class="fixed inset-0 bg-black/50 hidden z-[100] flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-lg p-6 rounded-2xl shadow-xl max-h-[80vh] overflow-y-auto">
+            <h3 class="font-bold text-xl mb-4">Dashboard Admin</h3>
+            <div id="admin-alat-list" class="space-y-3 mb-6"></div>
+            <div class="border-t pt-4 mt-4">
+                <button onclick="tambahBarisAdmin()" class="text-emerald-600 text-sm font-bold mb-4">+ Tambah Alat Baru</button>
+            </div>
+            <button onclick="simpanDanTutup()" class="w-full bg-slate-800 text-white p-3 rounded-xl font-bold">Simpan & Tutup</button>
+        </div>
+    </div>
+
     <div id="modalProfil" class="fixed inset-0 bg-black/50 hidden z-[60] flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-md p-6 rounded-2xl shadow-xl">
             <h3 class="font-bold text-xl mb-4">Profil Perusahaan</h3>
@@ -68,7 +79,7 @@
     <div id="mainContent">
         <header class="bg-white shadow-sm sticky top-0 z-50">
             <div class="max-w-7xl px-4 mx-auto flex justify-between items-center h-16 sm:h-20">
-                <a href="#" class="flex items-center gap-2 text-xl sm:text-2xl font-black text-emerald-600 tracking-wider">
+                <a href="#" onclick="bukaAdmin()" class="flex items-center gap-2 text-xl sm:text-2xl font-black text-emerald-600 tracking-wider">
                     <img src="https://via.placeholder.com/150" alt="Logo" class="h-8 w-8 object-contain">
                     JB<span class="text-amber-500">rent.id</span>
                 </a>
@@ -112,7 +123,6 @@
                         <input type="date" name="tanggalMulai" id="tglMulai" class="w-full border p-3 rounded-xl text-sm" onchange="hitungDurasi()" required>
                         <input type="date" name="tanggalSelesai" id="tglSelesai" class="w-full border p-3 rounded-xl text-sm" onchange="hitungDurasi()" required>
                         <input type="number" name="durasi" id="inputDurasi" placeholder="Durasi Sewa (Hari)" class="w-full border p-3 rounded-xl text-sm bg-slate-100" readonly required>
-                        <input type="text" name="totalHarga" id="inputHarga" placeholder="Total Harga (Otomatis)" class="w-full border p-3 rounded-xl text-sm bg-slate-100" readonly required>
                         <button type="submit" id="submitBtn" class="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold text-sm">Kirim Pesanan</button>
                     </form>
                 </div>
@@ -126,7 +136,7 @@
     </div>
 
     <script>
-        const alat = [
+        let alat = JSON.parse(localStorage.getItem('alatDB')) || [
             {nama: "Tenda kapasitas 2", harga: 35000}, {nama: "Tenda kapasitas 4", harga: 45000},
             {nama: "Carrier kapasitas 4 liter", harga: 25000}, {nama: "Carrier kapasitas 6 liter", harga: 30000},
             {nama: "Sleeping bag", harga: 18000}, {nama: "Tracking pole", harga: 15000},
@@ -137,22 +147,54 @@
             {nama: "Nesting", harga: 20000}, {nama: "Kompor", harga: 20000}, {nama: "Topi", harga: 15000}
         ];
         
+        function renderKatalog() {
+            const grid = document.getElementById('katalog-grid');
+            grid.innerHTML = "";
+            alat.forEach(item => {
+                grid.innerHTML += `
+                <div class="bg-white p-4 rounded-2xl border">
+                    <h3 class="font-bold text-base">${item.nama}</h3>
+                    <p class="text-emerald-600 font-bold mt-1 text-sm">Rp ${item.harga.toLocaleString()}/hari</p>
+                    <button onclick="tambahKeKeranjang('${item.nama}', ${item.harga})" class="w-full mt-3 bg-slate-100 hover:bg-emerald-600 hover:text-white py-2 rounded-xl text-sm transition">
+                        <i class="fa-solid fa-plus"></i> Tambah
+                    </button>
+                </div>`;
+            });
+        }
+
+        function bukaAdmin() {
+            const pass = prompt("Masukkan Password Admin:");
+            if (pass === "#havin9719*") {
+                renderAdminList();
+                document.getElementById('modalAdmin').classList.remove('hidden');
+            }
+        }
+
+        function renderAdminList() {
+            const list = document.getElementById('admin-alat-list');
+            list.innerHTML = alat.map((item, i) => `
+                <div class="flex gap-2 p-2 border rounded">
+                    <input value="${item.nama}" onchange="alat[${i}].nama=this.value" class="w-full text-sm p-1">
+                    <input type="number" value="${item.harga}" onchange="alat[${i}].harga=parseInt(this.value)" class="w-24 text-sm border-l pl-2 p-1">
+                    <button onclick="alat.splice(${i},1); renderAdminList()" class="text-red-500 px-2"><i class="fa-solid fa-trash"></i></button>
+                </div>`).join("");
+        }
+
+        function tambahBarisAdmin() {
+            alat.push({nama: "Nama Alat Baru", harga: 0});
+            renderAdminList();
+        }
+
+        function simpanDanTutup() {
+            localStorage.setItem('alatDB', JSON.stringify(alat));
+            renderKatalog();
+            document.getElementById('modalAdmin').classList.add('hidden');
+        }
+
         const artikel = [
             {judul: "Tips Mendaki Gunung untuk Pemula", isi: "Persiapkan fisik Anda minimal 2 minggu sebelum pendakian. Pastikan membawa logistik secukupnya dan selalu patuhi aturan pendakian setempat."},
             {judul: "Cara Merawat Tenda agar Awet", isi: "Setelah digunakan, bersihkan sisa tanah atau lumpur. Pastikan tenda benar-benar kering sebelum disimpan untuk mencegah jamur dan kerusakan pada material kain."}
         ];
-
-        const grid = document.getElementById('katalog-grid');
-        alat.forEach(item => {
-            grid.innerHTML += `
-            <div class="bg-white p-4 rounded-2xl border">
-                <h3 class="font-bold text-base">${item.nama}</h3>
-                <p class="text-emerald-600 font-bold mt-1 text-sm">Rp ${item.harga.toLocaleString()}/hari</p>
-                <button onclick="tambahKeKeranjang('${item.nama}', ${item.harga})" class="w-full mt-3 bg-slate-100 hover:bg-emerald-600 hover:text-white py-2 rounded-xl text-sm transition">
-                    <i class="fa-solid fa-plus"></i> Tambah
-                </button>
-            </div>`;
-        });
 
         function renderDaftarArtikel() {
             const container = document.getElementById('isi-artikel-lengkap');
@@ -189,10 +231,7 @@
         }
         function updateForm() {
             let keranjang = JSON.parse(localStorage.getItem('keranjang')) || [];
-            let durasi = document.getElementById('inputDurasi').value || 1;
-            let total = keranjang.reduce((sum, item) => sum + item.harga, 0) * durasi;
             document.getElementById('inputProduk').value = keranjang.map(item => item.nama).join(", ") || "";
-            document.getElementById('inputHarga').value = total > 0 ? "Rp " + total.toLocaleString() : "";
             document.getElementById('cart-count').innerText = keranjang.length;
             document.getElementById('list-keranjang').innerHTML = keranjang.map((item, index) => `
                 <div class="flex justify-between items-center p-2 bg-slate-50 rounded text-sm">
@@ -218,7 +257,7 @@
             const formData = new FormData(e.target);
             btn.innerText = "Mengirim...";
             fetch(SCRIPT_URL, { method: 'POST', body: formData }).then(() => {
-                window.open(`https://wa.me/${OWNER_WA}?text=Pesanan:%20${formData.get('produk')}`, '_blank');
+                window.open(`https://wa.me/${OWNER_WA}?text=Pesanan:%20${formData.get('produk')}%20(Durasi:%20${formData.get('durasi')}%20hari)`, '_blank');
                 alert("Pesanan berhasil!");
                 localStorage.removeItem('keranjang');
                 updateForm();
@@ -226,6 +265,7 @@
                 e.target.reset();
             });
         });
+        renderKatalog();
         updateForm();
     </script>
 </body>

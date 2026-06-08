@@ -119,10 +119,12 @@
                     <form id="bookingForm" class="space-y-3">
                         <input type="text" name="nama" placeholder="Nama Anda" class="w-full border p-3 rounded-xl text-sm" required>
                         <input type="tel" name="whatsapp" placeholder="Nomor WhatsApp" class="w-full border p-3 rounded-xl text-sm" required>
+                        <input type="text" name="jaminan" placeholder="Jaminan (KTP/SIM/Lainnya)" class="w-full border p-3 rounded-xl text-sm" required>
                         <input type="text" name="produk" id="inputProduk" placeholder="Daftar Alat (Otomatis)" class="w-full border p-3 rounded-xl text-sm bg-slate-100" readonly>
                         <input type="date" name="tanggalMulai" id="tglMulai" class="w-full border p-3 rounded-xl text-sm" onchange="hitungDurasi()" required>
                         <input type="date" name="tanggalSelesai" id="tglSelesai" class="w-full border p-3 rounded-xl text-sm" onchange="hitungDurasi()" required>
-                        <input type="number" name="durasi" id="inputDurasi" placeholder="Durasi Sewa (Hari)" class="w-full border p-3 rounded-xl text-sm bg-slate-100" readonly required>
+                        <input type="text" name="durasi" id="inputDurasi" placeholder="Durasi Sewa (Hari)" class="w-full border p-3 rounded-xl text-sm bg-slate-100" readonly required>
+                        <input type="text" name="total" id="inputTotal" placeholder="Total Bayar (Otomatis)" class="w-full border p-3 rounded-xl text-sm bg-slate-100 font-bold" readonly required>
                         <button type="submit" id="submitBtn" class="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold text-sm">Kirim Pesanan</button>
                     </form>
                 </div>
@@ -137,7 +139,7 @@
 
     <script>
         let alat = JSON.parse(localStorage.getItem('alatDB')) || [
-            {nama: "Tenda kapasitas 2", harga: 35000}, {nama: "Tenda kapasitas 4", harga: 45000},
+            {nama: "Tenda kapasitas 2", harga: 25000}, {nama: "Tenda kapasitas 4", harga: 45000},
             {nama: "Carrier kapasitas 4 liter", harga: 25000}, {nama: "Carrier kapasitas 6 liter", harga: 30000},
             {nama: "Sleeping bag", harga: 18000}, {nama: "Tracking pole", harga: 15000},
             {nama: "Hidropack", harga: 20000}, {nama: "Daypack", harga: 22000},
@@ -222,16 +224,21 @@
         function hitungDurasi() {
             const mulai = new Date(document.getElementById('tglMulai').value);
             const selesai = new Date(document.getElementById('tglSelesai').value);
+            let diffDays = 1;
             if (mulai && selesai && selesai >= mulai) {
                 const diffTime = Math.abs(selesai - mulai);
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
-                document.getElementById('inputDurasi').value = diffDays;
+                diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
             }
+            document.getElementById('inputDurasi').value = diffDays + " Hari";
             updateForm();
         }
         function updateForm() {
             let keranjang = JSON.parse(localStorage.getItem('keranjang')) || [];
+            let durasi = parseInt(document.getElementById('inputDurasi').value) || 1;
+            let total = keranjang.reduce((sum, item) => sum + (item.harga * durasi), 0);
+            
             document.getElementById('inputProduk').value = keranjang.map(item => item.nama).join(", ") || "";
+            document.getElementById('inputTotal').value = "Rp " + total.toLocaleString();
             document.getElementById('cart-count').innerText = keranjang.length;
             document.getElementById('list-keranjang').innerHTML = keranjang.map((item, index) => `
                 <div class="flex justify-between items-center p-2 bg-slate-50 rounded text-sm">
@@ -253,16 +260,16 @@
         }
         document.getElementById('bookingForm').addEventListener('submit', e => {
             e.preventDefault();
-            const btn = document.getElementById('submitBtn');
             const formData = new FormData(e.target);
-            btn.innerText = "Mengirim...";
+            const tgl = new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'});
+            
+            const invoice = `*=== INVOICE DIGITAL JB rent.id ===*%0APremium Outdoor & Hiking Gear Rentals%0ADibuat tgl: ${tgl}%0A%0A*Data Penyewa:*%0A• Nama: ${formData.get('nama')}%0A• No. HP/WA: ${formData.get('whatsapp')}%0A• Jaminan: ${formData.get('jaminan')}%0A%0A*Jadwal Sewa:*%0A• Tgl Ambil: ${formData.get('tanggalMulai')}%0A• Tgl Kembali: ${formData.get('tanggalSelesai')}%0A• Durasi: ${formData.get('durasi')}%0A%0A*Rincian Alat:*%0A${formData.get('produk')}%0A%0A*TOTAL BAYAR: ${formData.get('total')}%0A%0A*Alamat Pengambilan Alat:*%0AOemah Leyangan Asri, Ungaran Timur, Jawa Tengah%0A_Owner: Alvin Ni'matul Maula_%0A%0A_Harap membawa fisik asli KTP Anda saat ke basecamp sebagai jaminan resmi._`;
+
             fetch(SCRIPT_URL, { method: 'POST', body: formData }).then(() => {
-                window.open(`https://wa.me/${OWNER_WA}?text=Pesanan:%20${formData.get('produk')}%20(Durasi:%20${formData.get('durasi')}%20hari)`, '_blank');
-                alert("Pesanan berhasil!");
+                window.open(`https://wa.me/${OWNER_WA}?text=${invoice}`, '_blank');
+                alert("Pesanan berhasil dikirim!");
                 localStorage.removeItem('keranjang');
-                updateForm();
-                btn.innerText = "Kirim Pesanan";
-                e.target.reset();
+                location.reload();
             });
         });
         renderKatalog();

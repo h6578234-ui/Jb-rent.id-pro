@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JB rent.id - Penyewaan Alat Mendaki & Outdoor</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans">
+
+    <div id="modalProfil" class="fixed inset-0 bg-black/50 hidden z-[60] flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md p-6 rounded-2xl shadow-xl">
+            <h3 class="font-bold text-xl mb-4">Profil Perusahaan</h3>
+            <p class="mb-4">JB rent.id adalah pusat penyewaan alat outdoor terpercaya yang menyediakan perlengkapan berkualitas untuk petualangan Anda.</p>
+            <p class="text-sm text-slate-600 mb-2"><strong>Owner:</strong> ALVIN NI'MATUL MAULA</p>
+            <p class="text-sm text-slate-600 mb-4"><strong>Alamat:</strong> Oemah Leyangan Asri, Leyangan, Ungaran Timur, Jawa Tengah</p>
+            <button onclick="document.getElementById('modalProfil').classList.add('hidden')" class="w-full bg-emerald-600 text-white p-3 rounded-xl font-bold">Tutup</button>
+        </div>
+    </div>
+
+    <div id="modalSkt" class="fixed inset-0 bg-black/50 hidden z-[60] flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md p-6 rounded-2xl shadow-xl">
+            <h3 class="font-bold text-xl mb-4">Syarat & Ketentuan</h3>
+            <ul class="text-sm text-slate-600 space-y-2 list-decimal ml-4 mb-4">
+                <li>Menyertakan identitas diri (KTP/KTM/SIM) saat pengambilan.</li>
+                <li>Kerusakan alat menjadi tanggung jawab penyewa.</li>
+                <li>Keterlambatan pengembalian akan dikenakan denda per hari.</li>
+                <li>Pemesanan dianggap sah setelah konfirmasi via WhatsApp.</li>
+            </ul>
+            <button onclick="document.getElementById('modalSkt').classList.add('hidden')" class="w-full bg-emerald-600 text-white p-3 rounded-xl font-bold">Tutup</button>
+        </div>
+    </div>
+
+    <div id="modalPanduan" class="fixed inset-0 bg-black/50 hidden z-[60] flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md p-6 rounded-2xl shadow-xl">
+            <h3 class="font-bold text-xl mb-4">Panduan Pemesanan</h3>
+            <ol class="text-sm text-slate-600 space-y-2 list-decimal ml-4 mb-4">
+                <li>Pilih alat dari katalog dan klik tombol "Tambah".</li>
+                <li>Klik ikon keranjang untuk melihat atau mengedit pesanan.</li>
+                <li>Lengkapi formulir (nama, WhatsApp, tanggal, dan durasi).</li>
+                <li>Klik "Kirim Pesanan" untuk lanjut ke WhatsApp Admin.</li>
+            </ol>
+            <button onclick="document.getElementById('modalPanduan').classList.add('hidden')" class="w-full bg-emerald-600 text-white p-3 rounded-xl font-bold">Tutup</button>
+        </div>
+    </div>
+
+    <div id="halamanArtikel" class="hidden bg-white min-h-screen py-10 px-4 z-[70] relative">
+        <div class="max-w-3xl mx-auto">
+            <button onclick="document.getElementById('halamanArtikel').classList.add('hidden'); document.getElementById('mainContent').classList.remove('hidden')" class="mb-8 text-slate-500 hover:text-emerald-600 font-bold"><i class="fa-solid fa-arrow-left"></i> Kembali ke Beranda</button>
+            <div id="isi-artikel-lengkap"></div>
+        </div>
+    </div>
+
+    <div id="modalKeranjang" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md p-6 rounded-2xl shadow-xl">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-xl">Edit Pesanan</h3>
+                <button onclick="toggleModal()" class="text-slate-400 hover:text-slate-800"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="list-keranjang" class="space-y-2 mb-4 max-h-60 overflow-y-auto"></div>
+            <button onclick="toggleModal()" class="w-full bg-emerald-600 text-white p-3 rounded-xl font-bold">Tutup</button>
+        </div>
+    </div>
+
+    <div id="mainContent">
+        <header class="bg-white shadow-sm sticky top-0 z-50">
+            <div class="max-w-7xl px-4 mx-auto flex justify-between items-center h-16 sm:h-20">
+                <a href="#" class="flex items-center gap-2 text-xl sm:text-2xl font-black text-emerald-600 tracking-wider">
+                    <img src="https://via.placeholder.com/150" alt="Logo" class="h-8 w-8 object-contain">
+                    JB<span class="text-amber-500">rent.id</span>
+                </a>
+                
+                <button onclick="document.getElementById('nav-menu').classList.toggle('hidden')" class="md:hidden text-slate-800 text-xl p-2">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+
+                <nav id="nav-menu" class="hidden md:flex absolute md:static top-16 left-0 w-full bg-white md:bg-transparent p-6 md:p-0 flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-6 font-medium text-sm shadow-xl md:shadow-none border-b md:border-none border-slate-100">
+                    <a href="#" class="text-emerald-600">Beranda</a>
+                    <a href="#katalog" class="text-slate-600 hover:text-emerald-600">Katalog</a>
+                    <a href="#" onclick="document.getElementById('halamanArtikel').classList.remove('hidden'); document.getElementById('mainContent').classList.add('hidden'); renderDaftarArtikel(); document.getElementById('nav-menu').classList.add('hidden')" class="text-slate-600 hover:text-emerald-600">Artikel</a>
+                    <a href="#" onclick="document.getElementById('modalPanduan').classList.remove('hidden'); document.getElementById('nav-menu').classList.add('hidden')" class="text-slate-600 hover:text-emerald-600">Panduan</a>
+                    <a href="#" onclick="document.getElementById('modalSkt').classList.remove('hidden'); document.getElementById('nav-menu').classList.add('hidden')" class="text-slate-600 hover:text-emerald-600">S&K</a>
+                    <a href="#" onclick="document.getElementById('modalProfil').classList.remove('hidden'); document.getElementById('nav-menu').classList.add('hidden')" class="text-slate-600 hover:text-emerald-600">Profil</a>
+                </nav>
+
+                <button onclick="toggleModal()" class="relative">
+                    <i class="fa-solid fa-basket-shopping text-xl"></i>
+                    <span id="cart-count" class="absolute -top-2 -right-2 bg-amber-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">0</span>
+                </button>
+            </div>
+        </header>
+
+        <section class="relative bg-slate-900 text-white py-12 sm:py-20 px-4">
+            <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 items-center">
+                <div class="lg:col-span-7">
+                    <h1 class="text-3xl sm:text-5xl font-black mb-6 leading-tight">Sewa Alat Mendaki Praktis, Liburan Aman!</h1>
+                    <p class="text-slate-300 text-base sm:text-lg">Perlengkapan premium, siap pakai, tanpa ribet.</p>
+                    <div class="mt-8 bg-slate-800 p-4 rounded-xl border border-slate-700 text-sm sm:text-base">
+                        <p><i class="fa-brands fa-whatsapp text-emerald-400"></i> 0821-3605-1309 (Alvin)</p>
+                        <p class="mt-2 text-slate-400">Basecamp: Oemah Leyangan Asri, Ungaran Timur</p>
+                    </div>
+                </div>
+                <div id="booking-form" class="lg:col-span-5 bg-white text-slate-800 p-5 sm:p-6 rounded-2xl shadow-xl">
+                    <h3 class="font-bold text-xl mb-4">Formulir Pesanan</h3>
+                    <form id="bookingForm" class="space-y-3">
+                        <input type="text" name="nama" placeholder="Nama Anda" class="w-full border p-3 rounded-xl text-sm" required>
+                        <input type="tel" name="whatsapp" placeholder="Nomor WhatsApp" class="w-full border p-3 rounded-xl text-sm" required>
+                        <input type="text" name="produk" id="inputProduk" placeholder="Daftar Alat (Otomatis)" class="w-full border p-3 rounded-xl text-sm bg-slate-100" readonly>
+                        <input type="date" name="tanggalMulai" id="tglMulai" class="w-full border p-3 rounded-xl text-sm" onchange="hitungDurasi()" required>
+                        <input type="date" name="tanggalSelesai" id="tglSelesai" class="w-full border p-3 rounded-xl text-sm" onchange="hitungDurasi()" required>
+                        <input type="number" name="durasi" id="inputDurasi" placeholder="Durasi Sewa (Hari)" class="w-full border p-3 rounded-xl text-sm bg-slate-100" readonly required>
+                        <input type="text" name="totalHarga" id="inputHarga" placeholder="Total Harga (Otomatis)" class="w-full border p-3 rounded-xl text-sm bg-slate-100" readonly required>
+                        <button type="submit" id="submitBtn" class="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold text-sm">Kirim Pesanan</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <section id="katalog" class="max-w-7xl mx-auto px-4 py-12">
+            <h2 class="text-2xl sm:text-3xl font-extrabold mb-8">Paling Sering Disewa</h2>
+            <div id="katalog-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6"></div>
+        </section>
+    </div>
+
+    <script>
+        const alat = [
+            {nama: "Tenda kapasitas 2", harga: 35000}, {nama: "Tenda kapasitas 4", harga: 45000},
+            {nama: "Carrier kapasitas 4 liter", harga: 25000}, {nama: "Carrier kapasitas 6 liter", harga: 30000},
+            {nama: "Sleeping bag", harga: 18000}, {nama: "Tracking pole", harga: 15000},
+            {nama: "Hidropack", harga: 20000}, {nama: "Daypack", harga: 22000},
+            {nama: "Jaket", harga: 25000}, {nama: "Sepatu", harga: 30000},
+            {nama: "Lampu tenda", harga: 15000}, {nama: "Headlamp", harga: 15000},
+            {nama: "Matras", harga: 13000}, {nama: "Sarung tangan", harga: 13000},
+            {nama: "Nesting", harga: 20000}, {nama: "Kompor", harga: 20000}, {nama: "Topi", harga: 15000}
+        ];
+        
+        const artikel = [
+            {judul: "Tips Mendaki Gunung untuk Pemula", isi: "Persiapkan fisik Anda minimal 2 minggu sebelum pendakian. Pastikan membawa logistik secukupnya dan selalu patuhi aturan pendakian setempat."},
+            {judul: "Cara Merawat Tenda agar Awet", isi: "Setelah digunakan, bersihkan sisa tanah atau lumpur. Pastikan tenda benar-benar kering sebelum disimpan untuk mencegah jamur dan kerusakan pada material kain."}
+        ];
+
+        const grid = document.getElementById('katalog-grid');
+        alat.forEach(item => {
+            grid.innerHTML += `
+            <div class="bg-white p-4 rounded-2xl border">
+                <h3 class="font-bold text-base">${item.nama}</h3>
+                <p class="text-emerald-600 font-bold mt-1 text-sm">Rp ${item.harga.toLocaleString()}/hari</p>
+                <button onclick="tambahKeKeranjang('${item.nama}', ${item.harga})" class="w-full mt-3 bg-slate-100 hover:bg-emerald-600 hover:text-white py-2 rounded-xl text-sm transition">
+                    <i class="fa-solid fa-plus"></i> Tambah
+                </button>
+            </div>`;
+        });
+
+        function renderDaftarArtikel() {
+            const container = document.getElementById('isi-artikel-lengkap');
+            container.innerHTML = `<h2 class="text-4xl font-black mb-8">Artikel Petualangan</h2>`;
+            artikel.forEach(art => {
+                container.innerHTML += `
+                <div class="mb-8 p-6 bg-slate-50 rounded-3xl cursor-pointer hover:bg-emerald-50 transition" onclick="bacaArtikel('${art.judul}', '${art.isi}')">
+                    <h3 class="text-2xl font-bold text-emerald-700">${art.judul}</h3>
+                    <p class="text-slate-600 mt-2">Klik untuk membaca lengkap...</p>
+                </div>`;
+            });
+        }
+
+        function bacaArtikel(judul, isi) {
+            document.getElementById('isi-artikel-lengkap').innerHTML = `
+                <h1 class="text-4xl font-black text-slate-900 mb-6">${judul}</h1>
+                <div class="prose max-w-none text-lg text-slate-700">${isi}</div>
+                <button onclick="renderDaftarArtikel()" class="mt-10 text-emerald-600 font-bold"><i class="fa-solid fa-arrow-left"></i> Kembali ke Daftar Artikel</button>
+            `;
+        }
+
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwbQUzrv0yS7XyL_mmIlpOQiwNwfcpiK2ivg7EMmBqXOEsynW71jHsO1ty9t7n6G52B/exec";
+        const OWNER_WA = "6282136051309";
+        function toggleModal() { document.getElementById('modalKeranjang').classList.toggle('hidden'); }
+        function hitungDurasi() {
+            const mulai = new Date(document.getElementById('tglMulai').value);
+            const selesai = new Date(document.getElementById('tglSelesai').value);
+            if (mulai && selesai && selesai >= mulai) {
+                const diffTime = Math.abs(selesai - mulai);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
+                document.getElementById('inputDurasi').value = diffDays;
+            }
+            updateForm();
+        }
+        function updateForm() {
+            let keranjang = JSON.parse(localStorage.getItem('keranjang')) || [];
+            let durasi = document.getElementById('inputDurasi').value || 1;
+            let total = keranjang.reduce((sum, item) => sum + item.harga, 0) * durasi;
+            document.getElementById('inputProduk').value = keranjang.map(item => item.nama).join(", ") || "";
+            document.getElementById('inputHarga').value = total > 0 ? "Rp " + total.toLocaleString() : "";
+            document.getElementById('cart-count').innerText = keranjang.length;
+            document.getElementById('list-keranjang').innerHTML = keranjang.map((item, index) => `
+                <div class="flex justify-between items-center p-2 bg-slate-50 rounded text-sm">
+                    <span>${item.nama}</span>
+                    <button onclick="hapusDariKeranjang(${index})" class="text-red-500"><i class="fa-solid fa-trash"></i></button>
+                </div>`).join("");
+        }
+        function tambahKeKeranjang(nama, harga) {
+            let keranjang = JSON.parse(localStorage.getItem('keranjang')) || [];
+            keranjang.push({ nama, harga });
+            localStorage.setItem('keranjang', JSON.stringify(keranjang));
+            updateForm();
+        }
+        function hapusDariKeranjang(index) {
+            let keranjang = JSON.parse(localStorage.getItem('keranjang')) || [];
+            keranjang.splice(index, 1);
+            localStorage.setItem('keranjang', JSON.stringify(keranjang));
+            updateForm();
+        }
+        document.getElementById('bookingForm').addEventListener('submit', e => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            const formData = new FormData(e.target);
+            btn.innerText = "Mengirim...";
+            fetch(SCRIPT_URL, { method: 'POST', body: formData }).then(() => {
+                window.open(`https://wa.me/${OWNER_WA}?text=Pesanan:%20${formData.get('produk')}`, '_blank');
+                alert("Pesanan berhasil!");
+                localStorage.removeItem('keranjang');
+                updateForm();
+                btn.innerText = "Kirim Pesanan";
+                e.target.reset();
+            });
+        });
+        updateForm();
+    </script>
+</body>
+</html>

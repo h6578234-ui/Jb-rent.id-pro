@@ -11,14 +11,17 @@
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans">
 
-    <div id="modalAdmin" class="fixed inset-0 bg-black/50 hidden z-[100] flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-lg p-6 rounded-2xl shadow-xl max-h-[80vh] overflow-y-auto">
-            <h3 class="font-bold text-xl mb-4">Dashboard Admin</h3>
-            <div id="admin-alat-list" class="space-y-3 mb-6"></div>
-            <div class="border-t pt-4 mt-4">
-                <button onclick="tambahBarisAdmin()" class="text-emerald-600 text-sm font-bold mb-4">+ Tambah Alat Baru</button>
+    <!-- Modal Admin Katalog -->
+    <div id="modalAdminKatalog" class="fixed inset-0 bg-black/50 hidden z-[80] flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-lg p-6 rounded-2xl shadow-xl max-h-[80vh] flex flex-col">
+            <h3 class="font-bold text-xl mb-4">Edit Katalog</h3>
+            <div id="admin-list-container" class="overflow-y-auto mb-4 flex-grow space-y-2"></div>
+            <div class="border-t pt-4 space-y-2">
+                <input type="text" id="adminNama" placeholder="Nama Alat" class="w-full border p-2 rounded-xl text-sm">
+                <input type="number" id="adminHarga" placeholder="Harga Sewa" class="w-full border p-2 rounded-xl text-sm">
+                <button onclick="tambahDataAdmin()" class="w-full bg-emerald-600 text-white p-2 rounded-xl font-bold text-sm">Tambah Alat Baru</button>
             </div>
-            <button onclick="simpanDanTutup()" class="w-full bg-slate-800 text-white p-3 rounded-xl font-bold">Simpan & Tutup</button>
+            <button onclick="document.getElementById('modalAdminKatalog').classList.add('hidden')" class="mt-4 w-full bg-slate-200 p-2 rounded-xl font-bold text-sm">Tutup</button>
         </div>
     </div>
 
@@ -79,7 +82,7 @@
     <div id="mainContent">
         <header class="bg-white shadow-sm sticky top-0 z-50">
             <div class="max-w-7xl px-4 mx-auto flex justify-between items-center h-16 sm:h-20">
-                <a href="#" onclick="bukaAdmin()" class="flex items-center gap-2 text-xl sm:text-2xl font-black text-emerald-600 tracking-wider">
+                <a href="#" class="flex items-center gap-2 text-xl sm:text-2xl font-black text-emerald-600 tracking-wider">
                     <img src="https://via.placeholder.com/150" alt="Logo" class="h-8 w-8 object-contain">
                     JB<span class="text-amber-500">rent.id</span>
                 </a>
@@ -119,12 +122,12 @@
                     <form id="bookingForm" class="space-y-3">
                         <input type="text" name="nama" placeholder="Nama Anda" class="w-full border p-3 rounded-xl text-sm" required>
                         <input type="tel" name="whatsapp" placeholder="Nomor WhatsApp" class="w-full border p-3 rounded-xl text-sm" required>
-                        <input type="text" name="jaminan" placeholder="Jaminan (KTP/SIM/Lainnya)" class="w-full border p-3 rounded-xl text-sm" required>
+                        <input type="text" name="jaminan" placeholder="Jaminan (KTP/SIM + No)" class="w-full border p-3 rounded-xl text-sm" required>
                         <input type="text" name="produk" id="inputProduk" placeholder="Daftar Alat (Otomatis)" class="w-full border p-3 rounded-xl text-sm bg-slate-100" readonly>
                         <input type="date" name="tanggalMulai" id="tglMulai" class="w-full border p-3 rounded-xl text-sm" onchange="hitungDurasi()" required>
                         <input type="date" name="tanggalSelesai" id="tglSelesai" class="w-full border p-3 rounded-xl text-sm" onchange="hitungDurasi()" required>
-                        <input type="text" name="durasi" id="inputDurasi" placeholder="Durasi Sewa (Hari)" class="w-full border p-3 rounded-xl text-sm bg-slate-100" readonly required>
-                        <input type="text" name="total" id="inputTotal" placeholder="Total Bayar (Otomatis)" class="w-full border p-3 rounded-xl text-sm bg-slate-100 font-bold" readonly required>
+                        <input type="number" name="durasi" id="inputDurasi" placeholder="Durasi Sewa (Hari)" class="w-full border p-3 rounded-xl text-sm bg-slate-100" readonly required>
+                        <input type="text" name="totalHarga" id="inputHarga" placeholder="Total Harga (Otomatis)" class="w-full border p-3 rounded-xl text-sm bg-slate-100" readonly required>
                         <button type="submit" id="submitBtn" class="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold text-sm">Kirim Pesanan</button>
                     </form>
                 </div>
@@ -134,12 +137,13 @@
         <section id="katalog" class="max-w-7xl mx-auto px-4 py-12">
             <h2 class="text-2xl sm:text-3xl font-extrabold mb-8">Paling Sering Disewa</h2>
             <div id="katalog-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6"></div>
+            <button onclick="adminKatalog()" class="mt-4 text-xs text-slate-300">Edit Katalog</button>
         </section>
     </div>
 
     <script>
-        let alat = JSON.parse(localStorage.getItem('alatDB')) || [
-            {nama: "Tenda kapasitas 2", harga: 25000}, {nama: "Tenda kapasitas 4", harga: 45000},
+        let alat = JSON.parse(localStorage.getItem('alat_data')) || [
+            {nama: "Tenda kapasitas 2", harga: 35000}, {nama: "Tenda kapasitas 4", harga: 45000},
             {nama: "Carrier kapasitas 4 liter", harga: 25000}, {nama: "Carrier kapasitas 6 liter", harga: 30000},
             {nama: "Sleeping bag", harga: 18000}, {nama: "Tracking pole", harga: 15000},
             {nama: "Hidropack", harga: 20000}, {nama: "Daypack", harga: 22000},
@@ -152,7 +156,7 @@
         function renderKatalog() {
             const grid = document.getElementById('katalog-grid');
             grid.innerHTML = "";
-            alat.forEach(item => {
+            alat.forEach((item, index) => {
                 grid.innerHTML += `
                 <div class="bg-white p-4 rounded-2xl border">
                     <h3 class="font-bold text-base">${item.nama}</h3>
@@ -164,81 +168,67 @@
             });
         }
 
-        function bukaAdmin() {
-            const pass = prompt("Masukkan Password Admin:");
-            if (pass === "#havin9719*") {
-                renderAdminList();
-                document.getElementById('modalAdmin').classList.remove('hidden');
+        // Fungsi Admin Diperbarui (Menggunakan Modal)
+        function adminKatalog() {
+            if (prompt("Masukkan Password:") === "#havin9719*") {
+                const list = document.getElementById('admin-list-container');
+                list.innerHTML = alat.map((item, idx) => `
+                    <div class="flex justify-between items-center bg-slate-50 p-2 rounded-lg text-sm">
+                        <span>${item.nama} - Rp ${item.harga}</span>
+                        <button onclick="hapusAlat(${idx})" class="text-red-500"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `).join('');
+                document.getElementById('modalAdminKatalog').classList.remove('hidden');
             }
         }
 
-        function renderAdminList() {
-            const list = document.getElementById('admin-alat-list');
-            list.innerHTML = alat.map((item, i) => `
-                <div class="flex gap-2 p-2 border rounded">
-                    <input value="${item.nama}" onchange="alat[${i}].nama=this.value" class="w-full text-sm p-1">
-                    <input type="number" value="${item.harga}" onchange="alat[${i}].harga=parseInt(this.value)" class="w-24 text-sm border-l pl-2 p-1">
-                    <button onclick="alat.splice(${i},1); renderAdminList()" class="text-red-500 px-2"><i class="fa-solid fa-trash"></i></button>
-                </div>`).join("");
+        function tambahDataAdmin() {
+            let n = document.getElementById('adminNama').value;
+            let h = document.getElementById('adminHarga').value;
+            if (n && h) {
+                alat.push({nama: n, harga: parseInt(h)});
+                localStorage.setItem('alat_data', JSON.stringify(alat));
+                renderKatalog();
+                adminKatalog(); // refresh list
+                document.getElementById('adminNama').value = "";
+                document.getElementById('adminHarga').value = "";
+            }
         }
 
-        function tambahBarisAdmin() {
-            alat.push({nama: "Nama Alat Baru", harga: 0});
-            renderAdminList();
-        }
-
-        function simpanDanTutup() {
-            localStorage.setItem('alatDB', JSON.stringify(alat));
+        function hapusAlat(idx) {
+            alat.splice(idx, 1);
+            localStorage.setItem('alat_data', JSON.stringify(alat));
             renderKatalog();
-            document.getElementById('modalAdmin').classList.add('hidden');
+            adminKatalog(); // refresh list
         }
-
-        const artikel = [
-            {judul: "Tips Mendaki Gunung untuk Pemula", isi: "Persiapkan fisik Anda minimal 2 minggu sebelum pendakian. Pastikan membawa logistik secukupnya dan selalu patuhi aturan pendakian setempat."},
-            {judul: "Cara Merawat Tenda agar Awet", isi: "Setelah digunakan, bersihkan sisa tanah atau lumpur. Pastikan tenda benar-benar kering sebelum disimpan untuk mencegah jamur dan kerusakan pada material kain."}
-        ];
 
         function renderDaftarArtikel() {
             const container = document.getElementById('isi-artikel-lengkap');
             container.innerHTML = `<h2 class="text-4xl font-black mb-8">Artikel Petualangan</h2>`;
-            artikel.forEach(art => {
-                container.innerHTML += `
-                <div class="mb-8 p-6 bg-slate-50 rounded-3xl cursor-pointer hover:bg-emerald-50 transition" onclick="bacaArtikel('${art.judul}', '${art.isi}')">
-                    <h3 class="text-2xl font-bold text-emerald-700">${art.judul}</h3>
-                    <p class="text-slate-600 mt-2">Klik untuk membaca lengkap...</p>
-                </div>`;
-            });
-        }
-
-        function bacaArtikel(judul, isi) {
-            document.getElementById('isi-artikel-lengkap').innerHTML = `
-                <h1 class="text-4xl font-black text-slate-900 mb-6">${judul}</h1>
-                <div class="prose max-w-none text-lg text-slate-700">${isi}</div>
-                <button onclick="renderDaftarArtikel()" class="mt-10 text-emerald-600 font-bold"><i class="fa-solid fa-arrow-left"></i> Kembali ke Daftar Artikel</button>
-            `;
         }
 
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwbQUzrv0yS7XyL_mmIlpOQiwNwfcpiK2ivg7EMmBqXOEsynW71jHsO1ty9t7n6G52B/exec";
         const OWNER_WA = "6282136051309";
+        
         function toggleModal() { document.getElementById('modalKeranjang').classList.toggle('hidden'); }
+        
         function hitungDurasi() {
             const mulai = new Date(document.getElementById('tglMulai').value);
             const selesai = new Date(document.getElementById('tglSelesai').value);
-            let diffDays = 1;
             if (mulai && selesai && selesai >= mulai) {
                 const diffTime = Math.abs(selesai - mulai);
-                diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
+                document.getElementById('inputDurasi').value = diffDays;
             }
-            document.getElementById('inputDurasi').value = diffDays + " Hari";
             updateForm();
         }
+
         function updateForm() {
             let keranjang = JSON.parse(localStorage.getItem('keranjang')) || [];
-            let durasi = parseInt(document.getElementById('inputDurasi').value) || 1;
-            let total = keranjang.reduce((sum, item) => sum + (item.harga * durasi), 0);
-            
+            let durasi = document.getElementById('inputDurasi').value || 1;
+            let total = keranjang.reduce((sum, item) => sum + item.harga, 0) * durasi;
             document.getElementById('inputProduk').value = keranjang.map(item => item.nama).join(", ") || "";
-            document.getElementById('inputTotal').value = "Rp " + total.toLocaleString();
+            document.getElementById('inputHarga').value = total > 0 ? "Rp " + total.toLocaleString() : "";
             document.getElementById('cart-count').innerText = keranjang.length;
             document.getElementById('list-keranjang').innerHTML = keranjang.map((item, index) => `
                 <div class="flex justify-between items-center p-2 bg-slate-50 rounded text-sm">
@@ -246,30 +236,60 @@
                     <button onclick="hapusDariKeranjang(${index})" class="text-red-500"><i class="fa-solid fa-trash"></i></button>
                 </div>`).join("");
         }
+
         function tambahKeKeranjang(nama, harga) {
             let keranjang = JSON.parse(localStorage.getItem('keranjang')) || [];
             keranjang.push({ nama, harga });
             localStorage.setItem('keranjang', JSON.stringify(keranjang));
             updateForm();
         }
+
         function hapusDariKeranjang(index) {
             let keranjang = JSON.parse(localStorage.getItem('keranjang')) || [];
             keranjang.splice(index, 1);
             localStorage.setItem('keranjang', JSON.stringify(keranjang));
             updateForm();
         }
+
         document.getElementById('bookingForm').addEventListener('submit', e => {
             e.preventDefault();
+            const btn = document.getElementById('submitBtn');
             const formData = new FormData(e.target);
-            const tgl = new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'});
+            const tglSekarang = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
             
-            const invoice = `*=== INVOICE DIGITAL JB rent.id ===*%0APremium Outdoor & Hiking Gear Rentals%0ADibuat tgl: ${tgl}%0A%0A*Data Penyewa:*%0A• Nama: ${formData.get('nama')}%0A• No. HP/WA: ${formData.get('whatsapp')}%0A• Jaminan: ${formData.get('jaminan')}%0A%0A*Jadwal Sewa:*%0A• Tgl Ambil: ${formData.get('tanggalMulai')}%0A• Tgl Kembali: ${formData.get('tanggalSelesai')}%0A• Durasi: ${formData.get('durasi')}%0A%0A*Rincian Alat:*%0A${formData.get('produk')}%0A%0A*TOTAL BAYAR: ${formData.get('total')}%0A%0A*Alamat Pengambilan Alat:*%0AOemah Leyangan Asri, Ungaran Timur, Jawa Tengah%0A_Owner: Alvin Ni'matul Maula_%0A%0A_Harap membawa fisik asli KTP Anda saat ke basecamp sebagai jaminan resmi._`;
+            const pesan = `*=== INVOICE DIGITAL JB rent.id ===*
+Premium Outdoor & Hiking Gear Rentals
+Dibuat tgl: ${tglSekarang}
 
+*Data Penyewa:*
+• Nama: ${formData.get('nama')}
+• No. HP/WA: ${formData.get('whatsapp')}
+• Jaminan: ${formData.get('jaminan')}
+
+*Jadwal Sewa:*
+• Tgl Ambil: ${formData.get('tanggalMulai')}
+• Tgl Kembali: ${formData.get('tanggalSelesai')}
+• Durasi: ${formData.get('durasi')} Hari
+
+*Rincian Alat:*
+- ${formData.get('produk')}
+
+*TOTAL BAYAR: ${formData.get('totalHarga')}*
+
+*Alamat Pengambilan Alat:*
+Oemah Leyangan Asri, Leyangan, Ungaran Timur, Jawa Tengah
+_Owner: Alvin Ni'matul Maula_
+
+_Harap membawa fisik asli KTP Anda saat ke basecamp sebagai jaminan resmi._`;
+
+            btn.innerText = "Mengirim...";
             fetch(SCRIPT_URL, { method: 'POST', body: formData }).then(() => {
-                window.open(`https://wa.me/${OWNER_WA}?text=${invoice}`, '_blank');
-                alert("Pesanan berhasil dikirim!");
+                window.open(`https://wa.me/${OWNER_WA}?text=${encodeURIComponent(pesan)}`, '_blank');
+                alert("Pesanan berhasil!");
                 localStorage.removeItem('keranjang');
-                location.reload();
+                updateForm();
+                btn.innerText = "Kirim Pesanan";
+                e.target.reset();
             });
         });
         renderKatalog();

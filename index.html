@@ -5,13 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JB rent.id - Penyewaan Alat Mendaki & Outdoor</title>
     <meta property="og:url" content="https://h6578234-ui.github.io/Jb-rent.id-pro/">
-<link rel="canonical" href="https://h6578234-ui.github.io/Jb-rent.id-pro/">
+    <link rel="canonical" href="https://h6578234-ui.github.io/Jb-rent.id-pro/">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans">
 
-    <!-- Modal Admin Katalog -->
     <div id="modalAdminKatalog" class="fixed inset-0 bg-black/50 hidden z-[80] flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-lg p-6 rounded-2xl shadow-xl max-h-[80vh] flex flex-col">
             <h3 class="font-bold text-xl mb-4">Edit Katalog</h3>
@@ -83,7 +82,7 @@
         <header class="bg-white shadow-sm sticky top-0 z-50">
             <div class="max-w-7xl px-4 mx-auto flex justify-between items-center h-16 sm:h-20">
                 <a href="#" class="flex items-center gap-2 text-xl sm:text-2xl font-black text-emerald-600 tracking-wider">
-                    <img src="https://via.placeholder.com/150" alt="Logo" class="h-8 w-8 object-contain">
+                    <img src="https://raw.githubusercontent.com/h6578234-ui/Jb-rent.id-pro/main/Proyek%20(20260605023752).png" alt="Logo" class="h-8 w-8 object-contain">
                     JB<span class="text-amber-500">rent.id</span>
                 </a>
                 
@@ -168,7 +167,6 @@
             });
         }
 
-        // Fungsi Admin Diperbarui (Menggunakan Modal)
         function adminKatalog() {
             if (prompt("Masukkan Password:") === "#havin9719*") {
                 const list = document.getElementById('admin-list-container');
@@ -189,7 +187,7 @@
                 alat.push({nama: n, harga: parseInt(h)});
                 localStorage.setItem('alat_data', JSON.stringify(alat));
                 renderKatalog();
-                adminKatalog(); // refresh list
+                adminKatalog();
                 document.getElementById('adminNama').value = "";
                 document.getElementById('adminHarga').value = "";
             }
@@ -199,7 +197,7 @@
             alat.splice(idx, 1);
             localStorage.setItem('alat_data', JSON.stringify(alat));
             renderKatalog();
-            adminKatalog(); // refresh list
+            adminKatalog();
         }
 
         function renderDaftarArtikel() {
